@@ -1,0 +1,303 @@
+<!文件类型 HTML格式>
+<HTML格式 长距离="zh-CN">
+<头>
+    <元 charset="UTF-8">
+    <元 名称="视口" 内容=宽度=设备宽度，初始比例=1.0，最大比例=1.0，用户可缩放比例=否>
+    <标题>触屏贪食蛇</标题>
+    <风格>
+        身体 {
+            边距: 0;
+            填充物: 0;
+            背景色: #222;
+            颜色：白色；
+            显示:flex；
+            弯曲方向：列；
+            对齐项目：中心；
+            对齐内容：中心；
+            高度: 100vh;
+            溢出：隐藏； /* 禁止页面滚动 */
+            字体系列: '阿里尔'，无衬线；
+触摸动作：无； /* 禁用默认触摸动作 */
+        }
+
+        H1 {
+            字体大小: 24像素;
+            边缘-底部: 10像素;
+            颜色: #4CAF50;
+        }
+
+        #游戏板 {
+            背景色: #000;
+            箱形阴影: 0 0 20像素 RGBA(0,0,0,0.5);
+            边界: 2像素 固体的 #555;
+        }
+
+        #计分板 {
+            字体大小: 18像素;
+            边缘顶部: 10像素;
+        }
+
+        #指令 {
+            字体大小: 12像素;
+            颜色: #888;
+            边缘顶部: 5像素;
+        }
+    </风格>
+</头>
+<身体>
+
+    <H1>贪食蛇</H1>
+    <画布 ID标识="游戏板" 宽度="300" 高度="300"></画布>
+    <div格式 ID标识="ScoreBoard">分数: 0</div格式>
+    <div格式 ID标识="指令">在屏幕上滑动以控制方向<BR>撞墙或撞自己则游戏结束</div格式>
+
+    <脚本>
+        常量 画布= 文件.getElementById("游戏板");
+        常量 ctx=canvas.getContext(“2D”);
+        常量 分数元素= 文件.getElementById("ScoreBoard");
+
+        // 游戏参数配置
+        让 瓷砖计数= 20; // 地图网格数量 (20x20)
+        让 tileSize = 0;   // 格子大小（动态计算）
+        
+        // 调整Canvas大小以适应屏幕
+        功能 resizeCanvas() {
+            // 获取屏幕宽度，留出一点边距
+            让 尺寸= 数学.min(窗台.innerWidth, 窗台（inner height）—— 40;
+            // 确保是tileCount的倍数
+            size=size-(size%tileCount)；
+            
+画布宽度=大小；
+canvas.height=尺寸；
+平铺大小=大小/平铺计数；
+        }
+调整画布大小（）；
+
+        // 蛇的初始状态
+        让 headX = 10;
+        让 头部Y= 10;
+        让 x速度= 0;
+        让 y速度= 0;
+
+        让 SnakeParts=[]；
+        让 尾部长度= 2;
+
+        让 苹果X= 5;
+        让 appleY= 5;
+
+        让 分数= 0;
+        让 游戏速度= 7; // 游戏速度 (越大越快)
+        让 isGameOver游戏 假的;
+
+        // 触摸控制变量
+        让 touchstartx= 0;
+        让 触摸开始y 0;
+
+        // 游戏主循环
+        功能 平局游戏() {
+            如果 （isGameOver）{
+Ctx.fillStyle “白色”;
+ctx.font= "30px Arial";
+                ctx.textAlign = “中心”;
+                ctx.fillText("游戏结束!"，画布。宽度/ 2,canvas.height/ 2);
+ctx.font= "16px Arial";
+                ctx.fillText("点击屏幕重新开始"，画布。宽度/ 2,canvas.height/ 2 + 40);
+                返回;
+            }
+
+            changeSnakePosition();
+            让 result=isGameOverCheck()；
+            如果 （结果） 返回;
+
+clearScreen()；
+checkAppleCollision()；
+DrawApple()；
+DrawSnake()；
+DrawScore()；
+
+            setTimeout(平局， 1000 /gameSpeed)；
+        }
+
+        功能 isgameovercheck游戏() {
+            让 游戏结束 假的;
+
+            如果 (xVelocity) 0 &&y速度=== 0) 返回 假的;
+
+            // 撞墙检测
+            如果 (headX < 0 ||headX===tileCount||headY< 0 ||headY===tileCount){
+游戏结束= 真实的;
+            }
+
+            // 撞自己检测
+            对于 (让 i= 0;i<swinParts.long;i++){
+                让 part=SnakeParts[i]；
+                如果 (part.x==headX&&part.y===headY)
+游戏结束= 真实的;
+                    打破;
+                }
+            }
+
+            如果 （游戏结束）{
+isGameOver游戏 真实的;
+            }
+            返回 GameOver；
+}
+
+        功能 绘制得分() {
+            scoreElement.innerText = "分数: " +分数；
+        }
+
+        功能 清除屏幕() {
+Ctx.fillStyle '黑色';
+            ctx.fillRect(0, 0，画布。宽度，画布。高度)；
+        }
+
+        功能 画蛇() {
+Ctx.fillStyle '绿色';
+            对于 (让 i= 0;i<swinParts.long;i++){
+                让 part=SnakeParts[i]；
+ctx.fillRect(part.x*tileSize,part.y*tileSize,tileSize-) 2, tileSize - 2);
+            }
+
+            snakeParts.push(新的 SnakePart(headX,headY))；
+            如果 （SnakeParts.length>TailLength）{
+SnakeParts.shift()；
+            }
+
+ctx.fillStyle= “橙色”; // 蛇头颜色
+            ctx.fillRect(headX*tileSize,headY*tileSize,tileSize- 2, tileSize - 2);
+        }
+
+        功能 changeSnakePosition() {
+headX=headX+xVelocity；
+headY=headY+y速度；
+        }
+
+        功能 画苹果() {
+Ctx.fillStyle “红色”;
+ctx.fillRect(appleX*平铺大小，appleY*平铺大小，平铺大小- 2, tileSize - 2);
+        }
+
+        功能 检查苹果碰撞() {
+            如果 （appleX===headX&&appleY===headY）{
+苹果X= 数学.地板(数学.random()*tileCount)；
+苹果Y= 数学.地板(数学.random()*tileCount)；
+尾部长度++；
+分数++；
+                // 稍微增加一点难度/速度
+                如果(分数% 5 === 0)游戏速度+= 0.5; 
+            }
+        }
+
+        功能 蛇形部分(x、y) {
+            这.x=x；
+            这.y=y；
+        }
+
+        // --- 输入控制 (触摸 + 键盘) ---
+
+        // 触摸开始
+        文件.addEventLists(“触摸开始”, 功能(e) {
+TouchStartX=e.changedTouch[0].screenX；
+touchStartY=e.changedTouches[0].屏幕；
+            
+            // 游戏结束时点击重置
+            如果 （isGameOver）{
+重置游戏（）；
+}
+}, 假的);
+
+        // 触摸结束（判定滑动方向）
+        文件.addEventLists(“”, 功能(e) {
+            让 touchEndX = e.changedTouches[0].screenX;
+            让 touchEndY = e.changedTouches[0].screenY；
+            
+手柄滑动（touchStartX、touchStartY、touchEndX、touchEndY）；
+        }, 假的);
+
+        功能 handleSwipe(startX,startY,endX,endY) {
+            让 xDiff=endX-startX；
+            让 yDiff=endY-startY；
+
+            // 设置最小滑动距离，防止轻微误触
+            如果 (数学.abs(xDiff)< 10 && 数学.abs(yDiff)< 10) 返回;
+
+            // 比较水平和垂直移动距离，判定主要方向
+            如果 (数学.abs(xDiff)> 数学.abs(yDiff)){
+                // 水平移动
+                如果 (xDiff> 0) {
+                    如果 (xVelocity==-1) 返回; // 不能直接掉头
+                    y速度= 0；
+x速度= 1;
+                } 其他 {
+                    如果 (xVelocity== 1) 返回;
+y速度= 0；
+x速度=-1;
+                }
+            } 其他 {
+                // 垂直移动
+                如果 (yDiff> 0) {
+                    如果 (yVelocity==-1) 返回;
+y速度= 1；
+x速度= 0;
+                } 其他 {
+                    如果 (y速度== 1) 返回;
+y速度=-1；
+x速度= 0;
+                }
+            }
+        }
+        
+        // 键盘控制 (方便PC调试)
+        文件.body.addEventListener(按键keyDown；
+        功能 按键(事件) {
+            如果 （isGameOver）{
+重置游戏（）；
+                返回;
+            }
+
+            // 上
+            如果 (event.keyCode== 38) {
+                如果 (y速度== 1) 返回;
+y速度=-1；
+x速度= 0;
+            }
+            // 下
+            如果 (event.keyCode== 40) {
+                如果 (yVelocity==-1) 返回;
+y速度= 1；
+x速度= 0;
+            }
+            // 左
+            如果 (event.keyCode== 37) {
+                如果 (xVelocity== 1) 返回;
+y速度= 0；
+x速度=-1;
+            }
+            // 右
+            如果 (event.keyCode== 39) {
+                如果 (xVelocity==-1) 返回;
+y速度= 0；
+x速度= 1;
+            }
+        }
+
+        功能 重置游戏() {
+isgameover游戏 假的;
+            headX = 10;
+头部Y= 10;
+SnakeParts=[]；
+尾部长度= 2;
+分数= 0；
+x速度= 0;
+y速度= 0;
+游戏速度= 7;
+DrawGame()；
+}
+
+        // 开始游戏
+        DrawGame()；
+
+    </脚本>
+</身体>
+</HTML格式>
